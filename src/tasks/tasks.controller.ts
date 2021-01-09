@@ -18,7 +18,7 @@ import { TasksService } from './tasks.service';
 import { Response } from 'express';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter-dto';
-import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe.';
+import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
 
 type GetTasksResponse = {
   message?: string;
