@@ -77,7 +77,6 @@ export class TasksController {
 
   @Patch('/:id/status')
   updateTaskStatusById(
-    @Res({ passthrough: true }) res: Response,
     @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto,
   ) {
@@ -89,9 +88,8 @@ export class TasksController {
       return result;
     }
 
-    res.status(404);
-    return {
-      messsage: `Cannot update this record, seem like the record with id ${id} is not exist.`,
-    };
+    throw new NotFoundException({
+      message: `Cannot update this record, seem like the record with id ${id} is not exist.`,
+    });
   }
 }
