@@ -1,8 +1,4 @@
-import {
-  ArgumentMetadata,
-  PipeTransform,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { PipeTransform, UnprocessableEntityException } from '@nestjs/common';
 import { TaskStatus } from '../task.model';
 
 export class TaskStatusValidationPipe implements PipeTransform {
@@ -12,7 +8,7 @@ export class TaskStatusValidationPipe implements PipeTransform {
     TaskStatus.IN_PROGRESS,
   ];
 
-  transform(value: any, metadata: ArgumentMetadata) {
+  transform(value: any) {
     const { status } = value;
 
     if (!status) {

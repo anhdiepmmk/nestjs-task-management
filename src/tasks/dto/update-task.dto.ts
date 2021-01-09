@@ -1,4 +1,4 @@
-import { TaskStatus } from "../task.model";
+import { TaskStatus } from '../task.model';
 
 export class UpdateTaskDto {
   title?: string;

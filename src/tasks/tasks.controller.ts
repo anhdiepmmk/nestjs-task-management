@@ -18,10 +18,9 @@ import { TasksService } from './tasks.service';
 import { Response } from 'express';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter-dto';
-import { validate, validateOrReject } from 'class-validator';
 import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe.';
 
-type GetAllTasksResponse = {
+type GetTasksResponse = {
   message?: string;
   data: Task[];
 };
@@ -31,7 +30,9 @@ export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getTasks(@Query() filterDto: GetTasksFilterDto): GetAllTasksResponse {
+  getTasks(
+    @Query(ValidationPipe) filterDto: GetTasksFilterDto,
+  ): GetTasksResponse {
     return {
       data: this.tasksService.getTasks(filterDto),
     };
