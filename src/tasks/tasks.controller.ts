@@ -3,19 +3,23 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   HttpStatus,
-  NotFoundException,
   Param,
   Patch,
   Post,
+  Query,
   Res,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Task } from './task.model';
 import { TasksService } from './tasks.service';
 import { Response } from 'express';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { GetTasksFilterDto } from './dto/get-tasks-filter-dto';
+import { validate, validateOrReject } from 'class-validator';
+import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe.';
 
 type GetAllTasksResponse = {
   message?: string;
@@ -27,27 +31,20 @@ export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getAllTasks(): GetAllTasksResponse {
+  getTasks(@Query() filterDto: GetTasksFilterDto): GetAllTasksResponse {
     return {
-      data: this.tasksService.getAllTasks(),
+      data: this.tasksService.getTasks(filterDto),
     };
   }
 
   @Get('/:id')
   getTaskById(@Param('id') id: string): Task {
     const task: Task = this.tasksService.getTaskById(id);
-
-    if (!task) {
-      throw new NotFoundException({
-        status: HttpStatus.NOT_FOUND,
-        message: `Task id ${id} is not found.`,
-      });
-    }
-
     return task;
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
   createTask(
     @Res({ passthrough: true }) res: Response,
     @Body() createTaskDto: CreateTaskDto,
@@ -62,34 +59,20 @@ export class TasksController {
     @Res({ passthrough: true }) res: Response,
     @Param('id') id: string,
   ) {
-    const result = this.tasksService.deleteTaskById(id);
-    if (result) {
-      return {
-        messsage: 'Deleted.',
-      };
-    }
-
-    res.status(404);
+    this.tasksService.deleteTaskById(id);
     return {
-      messsage: `Cannot delete this record, seem like the record with id ${id} is not exist.`,
+      messsage: 'Deleted.',
     };
   }
 
   @Patch('/:id/status')
+  @UsePipes()
   updateTaskStatusById(
     @Param('id') id: string,
-    @Body() updateTaskDto: UpdateTaskDto,
+    @Body(TaskStatusValidationPipe) updateTaskDto: UpdateTaskDto,
   ) {
-    const result = this.tasksService.updateTaskById(id, {
+    return this.tasksService.updateTaskById(id, {
       status: updateTaskDto.status,
-    });
-
-    if (result) {
-      return result;
-    }
-
-    throw new NotFoundException({
-      message: `Cannot update this record, seem like the record with id ${id} is not exist.`,
     });
   }
 }
