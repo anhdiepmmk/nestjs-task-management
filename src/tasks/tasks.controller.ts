@@ -7,6 +7,7 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  Patch,
   Post,
   Res,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { Task } from './task.model';
 import { TasksService } from './tasks.service';
 import { Response } from 'express';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 type GetAllTasksResponse = {
   message?: string;
@@ -70,6 +72,26 @@ export class TasksController {
     res.status(404);
     return {
       messsage: `Cannot delete this record, seem like the record with id ${id} is not exist.`,
+    };
+  }
+
+  @Patch('/:id/status')
+  updateTaskStatusById(
+    @Res({ passthrough: true }) res: Response,
+    @Param('id') id: string,
+    @Body() updateTaskDto: UpdateTaskDto,
+  ) {
+    const result = this.tasksService.updateTaskById(id, {
+      status: updateTaskDto.status,
+    });
+
+    if (result) {
+      return result;
+    }
+
+    res.status(404);
+    return {
+      messsage: `Cannot update this record, seem like the record with id ${id} is not exist.`,
     };
   }
 }
