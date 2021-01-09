@@ -1,0 +1,42 @@
+version: '3'
+services:
+  postgres:
+    restart: unless-stopped
+    image: postgres:13.1
+    container_name: postgres
+    expose: 
+      - 5433
+    ports:
+      - 5433:5433
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=${PGDATA}
+    volumes:
+      - postgres:${PGDATA}
+    networks:
+      - ${NETWORK}
+
+  pgadmin:
+    container_name: pgadmin4
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+       - pgadmin:/root/.pgadmin
+    ports:
+      - "8080:80"
+    networks:
+      - ${NETWORK}
+    restart: unless-stopped
+    tty: true
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+    postgres:
+    pgadmin:
