@@ -39,14 +39,13 @@ export class TasksService {
   }
 
   updateTaskById(id: string, updateTaskDto: UpdateTaskDto): boolean | Task {
-    const foundIndex: number = this.tasks.findIndex(
+    const found: Task | undefined = this.tasks.find(
       (task: Task) => task.id === id,
     );
 
-    if (foundIndex > -1) {
-      const foundValue = this.tasks[foundIndex];
-      this.tasks[foundIndex] = { ...foundValue, ...updateTaskDto, id: id };
-      return this.tasks[foundIndex];
+    if (found) {
+      Object.assign(found, { ...found, ...updateTaskDto, id: id });
+      return found;
     }
     return false;
   }
