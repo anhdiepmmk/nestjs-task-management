@@ -1,0 +1,22 @@
+version: '3'
+services:
+  postgres:
+    restart: always
+    image: postgres:13.1
+    container_name: postgres
+    expose: 
+      - 5433
+    ports:
+      - 5433:5433
+    environment:
+      - POSTGRES_USER: nestjs
+      - POSTGRES_DB: nestjs
+      - POSTGRES_PASSWORD: 123456
+      - PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
