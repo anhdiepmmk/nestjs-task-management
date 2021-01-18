@@ -5,9 +5,9 @@ services:
     image: postgres:13.1
     container_name: postgres
     expose: 
-      - 5433
+      - 5432
     ports:
-      - 5433:5433
+      - 5432:5432
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
