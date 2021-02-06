@@ -38,8 +38,9 @@ export class TasksController {
   @Get()
   async getTasks(
     @Query(ValidationPipe) filterDto: GetTasksFilterDto,
+    @GetUser() user: User,
   ): Promise<GetTasksResponse> {
-    const tasks = await this.tasksService.getTasks(filterDto);
+    const tasks = await this.tasksService.getTasks(filterDto, user);
 
     return {
       data: tasks,
@@ -47,8 +48,11 @@ export class TasksController {
   }
 
   @Get('/:id')
-  async getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
-    return this.tasksService.getTaskById(id);
+  async getTaskById(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    return this.tasksService.getTaskById(id, user);
   }
 
   @Post()
@@ -70,8 +74,9 @@ export class TasksController {
   deleteTaskById(
     @Res({ passthrough: true }) res: Response,
     @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
   ): Promise<void> {
-    return this.tasksService.deleteTaskById(id);
+    return this.tasksService.deleteTaskById(id, user);
   }
 
   @Patch('/:id/status')
@@ -79,9 +84,14 @@ export class TasksController {
   updateTaskStatusById(
     @Param('id', ParseIntPipe) id: number,
     @Body(TaskStatusValidationPipe) updateTaskDto: UpdateTaskDto,
+    @GetUser() user: User,
   ): Promise<Task> {
-    return this.tasksService.updateTaskById(id, {
-      status: updateTaskDto.status,
-    });
+    return this.tasksService.updateTaskById(
+      id,
+      {
+        status: updateTaskDto.status,
+      },
+      user,
+    );
   }
 }
