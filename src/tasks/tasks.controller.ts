@@ -10,6 +10,7 @@ import {
   Post,
   Query,
   Res,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -20,6 +21,9 @@ import { Response } from 'express';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter-dto';
 import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/auth/user.entity';
+import { GetUser } from 'src/auth/get-user.decorator';
 
 type GetTasksResponse = {
   message?: string;
@@ -27,6 +31,7 @@ type GetTasksResponse = {
 };
 
 @Controller('tasks')
+@UseGuards(AuthGuard())
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
@@ -51,9 +56,11 @@ export class TasksController {
   createTask(
     @Res({ passthrough: true }) res: Response,
     @Body() createTaskDto: CreateTaskDto,
+    @GetUser() user: User,
   ): Promise<Task> {
     const promiseTask: Promise<Task> = this.tasksService.createTask(
       createTaskDto,
+      user,
     );
     res.status(HttpStatus.OK);
     return promiseTask;
