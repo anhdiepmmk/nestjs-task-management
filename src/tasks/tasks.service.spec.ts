@@ -108,7 +108,9 @@ describe('TasksService', () => {
 
   describe('Update task', () => {
     it('should update a status task succesffuly', async () => {
-      const save = jest.fn().mockResolvedValue(true);
+      const save = jest.fn().mockResolvedValue({
+        status: TaskStatus.DONE,
+      });
 
       tasksService.getTaskById = jest.fn().mockResolvedValue({
         status: TaskStatus.OPEN,
