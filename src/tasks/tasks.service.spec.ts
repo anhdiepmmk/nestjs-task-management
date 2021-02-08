@@ -1,4 +1,6 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter-dto';
 import { TaskStatus } from './task-status.enum';
 import { TaskRepository } from './task.repository';
@@ -6,9 +8,11 @@ import { TasksService } from './tasks.service';
 
 const mockTaskRepository = () => ({
   getTasks: jest.fn(),
+  findOne: jest.fn(),
+  createTask: jest.fn(),
 });
 
-const mockUser = { username: 'Test user' };
+const mockUser = { id: 1, username: 'Test user' };
 
 describe('TasksService', () => {
   let tasksService;
@@ -37,6 +41,48 @@ describe('TasksService', () => {
       const result = await tasksService.getTasks(filters, mockUser);
       expect(taskRepository.getTasks).toHaveBeenCalled();
       expect(result).toEqual('someValue');
+    });
+  });
+
+  describe('Get task by id', () => {
+    it('should retrieve succesffuly a task from the repository', async () => {
+      const mockTask = {
+        title: 'Test task',
+        description: 'Test desc',
+      };
+      taskRepository.findOne.mockResolvedValue(mockTask);
+      const result = await tasksService.getTaskById(1, mockUser);
+      expect(result).toEqual(mockTask);
+      expect(taskRepository.findOne).toHaveBeenCalledWith({
+        where: {
+          id: 1,
+          userId: mockUser.id,
+        },
+      });
+    });
+
+    it('should throws an error as task is not found', async () => {
+      taskRepository.findOne.mockResolvedValue(null);
+      expect(tasksService.getTaskById(1, mockUser)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('Create task', () => {
+    it('should create a task succesffuly', async () => {
+      expect(taskRepository.createTask).not.toHaveBeenCalled();
+      const createTaskDto = {
+        title: 'A title',
+        description: 'A description',
+      };
+      taskRepository.createTask.mockResolvedValue('someTask');
+      const result = await tasksService.createTask(createTaskDto, mockUser);
+      expect(taskRepository.createTask).toHaveBeenCalledWith(
+        createTaskDto,
+        mockUser,
+      );
+      expect(result).toEqual('someTask');
     });
   });
 });
