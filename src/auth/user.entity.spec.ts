@@ -15,7 +15,7 @@ describe('User entity', () => {
       jest.clearAllMocks();
     });
 
-    it('returns true as password is valid', async () => {
+    it('should returns true as password is valid', async () => {
       jest
         .spyOn(bcrypt, 'hash')
         .mockImplementation(() => Promise.resolve('testPassword'));
@@ -25,7 +25,7 @@ describe('User entity', () => {
       expect(result).toEqual(true);
     });
 
-    it('returns false as password is invalid', async () => {
+    it('should returns false as password is invalid', async () => {
       jest
         .spyOn(bcrypt, 'hash')
         .mockImplementation(() => Promise.resolve('wrongPassword'));
